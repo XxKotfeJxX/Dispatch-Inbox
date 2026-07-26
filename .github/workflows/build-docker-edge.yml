@@ -1,8 +1,8 @@
 on:
   push:
-    branches: [ develop ]
+    branches: [ develop, 'agent/**' ]
 
-name: Build docker edge images
+name: Build Docker images
 permissions:
   contents: read
   packages: write
@@ -58,4 +58,4 @@ jobs:
           "VERSION=${{ steps.next-version.outputs.version }}"
         push: true
         tags: |
-          ghcr.io/${{ github.repository }}:edge
+          ghcr.io/${{ github.repository }}:${{ github.ref_name == 'develop' && 'edge' || 'preview' }}
