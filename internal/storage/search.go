@@ -434,6 +434,33 @@ func searchQueryBuilder(searchString, timezone string) *sqlf.Stmt {
 					q.Where(`m.ID IN (SELECT mt.ID FROM `+tenant("message_tags")+` mt JOIN `+tenant("tags")+` t ON mt.TagID = t.ID WHERE t.Name = ?)`, w)
 				}
 			}
+		} else if strings.HasPrefix(lw, "tag-any:") {
+			rawNames := strings.Split(w[8:], ",")
+			names := make([]string, 0, len(rawNames))
+			for _, name := range rawNames {
+				if cleaned := cleanString(name); cleaned != "" {
+					names = append(names, cleaned)
+				}
+			}
+			if len(names) > 0 {
+				placeholders := strings.TrimSuffix(strings.Repeat("?,", len(names)), ",")
+				operator := ""
+				if exclude {
+					operator = "NOT"
+				}
+				query := fmt.Sprintf(
+					"m.ID %s IN (SELECT mt.ID FROM %s mt JOIN %s t ON mt.TagID = t.ID WHERE LOWER(t.Name) IN (%s))",
+					operator,
+					tenant("message_tags"),
+					tenant("tags"),
+					placeholders,
+				)
+				values := make([]any, 0, len(names))
+				for _, name := range names {
+					values = append(values, strings.ToLower(name))
+				}
+				q.Where(query, values...)
+			}
 		} else if lw == "is:read" {
 			if exclude {
 				q.Where("Read = 0")

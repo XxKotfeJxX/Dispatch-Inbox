@@ -84,6 +84,9 @@ var (
 	// UIAuthFile for UI & API authentication
 	UIAuthFile string
 
+	// UIRegistration allows users to create credentials from the web UI.
+	UIRegistration bool
+
 	// Webroot to define the base path for the UI and API
 	Webroot = "/"
 
@@ -409,7 +412,7 @@ func VerifyConfig() error {
 		return errors.New("[send-api] authentication cannot use both credentials and --send-api-auth-accept-any")
 	}
 
-	if SendAPIAuthAcceptAny && auth.UICredentials != nil {
+	if SendAPIAuthAcceptAny && auth.UIAuthEnabled() {
 		logger.Log().Info("[send-api] disabling authentication")
 	}
 
