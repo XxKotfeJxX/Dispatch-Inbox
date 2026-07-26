@@ -58,4 +58,4 @@ jobs:
           "VERSION=${{ steps.next-version.outputs.version }}"
         push: true
         tags: |
-          ghcr.io/${{ github.repository }}:${{ github.ref_name == 'develop' && 'edge' || 'preview' }}
+          ghcr.io/xxkotfejxx/dispatch-inbox:${{ github.ref_name == 'develop' && 'edge' || 'preview' }}
