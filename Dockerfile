@@ -12,11 +12,11 @@ CGO_ENABLED=0 go build -ldflags "-s -w -X github.com/axllent/mailpit/config.Vers
 
 FROM alpine:latest
 
-LABEL org.opencontainers.image.title="Mailpit" \
-  org.opencontainers.image.description="An email and SMTP testing tool with API for developers" \
-  org.opencontainers.image.source="https://github.com/axllent/mailpit" \
-  org.opencontainers.image.url="https://mailpit.axllent.org" \
-  org.opencontainers.image.documentation="https://mailpit.axllent.org/docs/" \
+LABEL org.opencontainers.image.title="Dispatch Inbox" \
+  org.opencontainers.image.description="A self-hosted notification inbox for Dispatch, powered by Mailpit" \
+  org.opencontainers.image.source="https://github.com/XxKotfeJxX/Dispatch-Inbox" \
+  org.opencontainers.image.url="https://github.com/XxKotfeJxX/Dispatch-Inbox" \
+  org.opencontainers.image.documentation="https://github.com/XxKotfeJxX/Dispatch-Inbox#readme" \
   org.opencontainers.image.licenses="MIT"
 
 COPY --from=builder /mailpit /mailpit

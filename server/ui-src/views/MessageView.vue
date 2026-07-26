@@ -478,8 +478,8 @@ export default {
 	<div class="navbar navbar-expand-lg row flex-shrink-0 bg-primary text-white d-print-none" data-bs-theme="dark">
 		<div class="d-none d-xl-block col-xl-3 col-auto pe-0">
 			<RouterLink to="/" class="navbar-brand text-white me-0" @click="pagination.start = 0">
-				<img :src="resolve('/mailpit.svg')" alt="Mailpit" />
-				<span class="ms-2 d-none d-sm-inline">Mailpit</span>
+				<img :src="resolve('/dispatch-inbox.svg')" alt="Dispatch Inbox" />
+				<span class="ms-2 d-none d-sm-inline">Dispatch <small>Inbox</small></span>
 			</RouterLink>
 		</div>
 		<div v-if="!errorMessage" class="col col-xl-5">

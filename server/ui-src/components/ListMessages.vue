@@ -22,6 +22,28 @@ export default {
 		};
 	},
 
+	computed: {
+		sortedMessages() {
+			const messages = [...mailbox.messages];
+			const priority = { critical: 0, high: 1, normal: 2, low: 3 };
+			const getPriority = (message) => {
+				const tag = message.Tags.find((value) => value.toLowerCase().startsWith("priority-"));
+				return tag ? tag.slice("priority-".length).toLowerCase() : "normal";
+			};
+
+			if (mailbox.sortOrder === "oldest") {
+				return messages.sort((a, b) => new Date(a.Created) - new Date(b.Created));
+			}
+			if (mailbox.sortOrder === "size") {
+				return messages.sort((a, b) => b.Size - a.Size);
+			}
+			if (mailbox.sortOrder === "priority") {
+				return messages.sort((a, b) => priority[getPriority(a)] - priority[getPriority(b)]);
+			}
+			return messages.sort((a, b) => new Date(b.Created) - new Date(a.Created));
+		},
+	},
+
 	created() {
 		const relativeTime = require("dayjs/plugin/relativeTime");
 		dayjs.extend(relativeTime);
@@ -50,6 +72,16 @@ export default {
 			}
 
 			return "[ Undisclosed recipients ]";
+		},
+
+		getPlatform(message) {
+			const tag = message.Tags.find((value) => value.toLowerCase().startsWith("platform-"));
+			return tag ? tag.slice("platform-".length) : "Dispatch";
+		},
+
+		getPriority(message) {
+			const tag = message.Tags.find((value) => value.toLowerCase().startsWith("priority-"));
+			return tag ? tag.slice("priority-".length) : "normal";
 		},
 
 		isSelected(id) {
@@ -122,68 +154,51 @@ export default {
 
 <template>
 	<template v-if="mailbox.messages && mailbox.messages.length">
-		<div class="list-group my-2">
+		<div class="dispatch-message-list mx-2 my-3" :class="{ 'summary-grid': mailbox.summaryMode }">
 			<RouterLink
-				v-for="message in mailbox.messages"
+				v-for="message in sortedMessages"
 				:id="message.ID"
 				:key="'message_' + message.ID"
 				:to="'/view/' + message.ID"
-				class="row gx-1 message d-flex small list-group-item list-group-item-action border-start-0 border-end-0"
+				class="dispatch-message message"
 				:class="[message.Read ? 'read' : '', isSelected(message.ID) ? ' selected' : '']"
 				@click.meta="toggleSelected($event, message.ID)"
 				@click.ctrl="toggleSelected($event, message.ID)"
 				@click.shift="selectRange($event, message.ID)"
 			>
-				<div class="col-lg-3">
-					<div class="d-lg-none float-end text-muted text-nowrap small">
-						<i v-if="message.Attachments" class="bi bi-paperclip h6 me-1"></i>
-						{{ getRelativeCreated(message) }}
-					</div>
-					<div v-if="message.From" class="overflow-x-hidden">
-						<div class="text-truncate privacy">
-							<b :title="'From: ' + message.From.Address">
-								{{ message.From.Name ? message.From.Name : message.From.Address }}
-							</b>
-						</div>
-					</div>
-					<div class="overflow-x-hidden">
-						<div class="text-truncate text-muted small privacy">
-							To: {{ getPrimaryEmailTo(message) }}
-							<span v-if="message.To && message.To.length > 1"> [+{{ message.To.length - 1 }}] </span>
-						</div>
-					</div>
+				<div class="message-platform" :class="'platform-' + getPlatform(message).toLowerCase()">
+					<i class="bi bi-app-indicator"></i>
+					<span>{{ getPlatform(message) }}</span>
 				</div>
-				<div class="col-lg-6 col-xxl-7 mt-2 mt-lg-0">
-					<div class="subject text-truncate text-spaces-nowrap">
-						<b>{{ message.Subject !== "" ? message.Subject : "[ no subject ]" }}</b>
+				<div class="message-copy">
+					<div class="d-flex align-items-center gap-2">
+						<span
+							class="priority-dot"
+							:class="'priority-' + getPriority(message)"
+							:title="getPriority(message)"
+						></span>
+						<div class="subject text-truncate text-spaces-nowrap">
+							<b>{{ message.Subject !== "" ? message.Subject : "[ no subject ]" }}</b>
+						</div>
 					</div>
-					<div v-if="message.Snippet !== ''" class="small text-muted text-truncate">
+					<div
+						v-if="message.Snippet !== ''"
+						class="message-summary text-muted"
+						:class="{ 'text-truncate': !mailbox.summaryMode }"
+					>
 						{{ message.Snippet }}
 					</div>
-					<div v-if="message.Tags.length">
-						<RouterLink
-							v-for="t in message.Tags"
-							:key="t"
-							class="badge me-1"
-							:to="toTagUrl(t)"
-							:style="
-								mailbox.showTagColors
-									? { backgroundColor: colorHash(t) }
-									: { backgroundColor: '#6c757d' }
-							"
-							:title="'Filter messages tagged with ' + t"
-							@click="pagination.start = 0"
-						>
-							{{ t }}
-						</RouterLink>
+					<div v-if="mailbox.summaryMode" class="message-origin text-muted small privacy">
+						<span v-if="message.From">
+							{{ message.From.Name || message.From.Address }}
+						</span>
+						<span v-if="message.To?.length"> → {{ getPrimaryEmailTo(message) }}</span>
 					</div>
 				</div>
-				<div class="d-none d-lg-block col-1 small text-end text-muted">
-					<i v-if="message.Attachments" class="bi bi-paperclip float-start h6"></i>
-					{{ getFileSize(message.Size) }}
-				</div>
-				<div class="d-none d-lg-block col-2 col-xxl-1 small text-end text-muted">
-					{{ getRelativeCreated(message) }}
+				<div class="message-meta text-muted">
+					<span v-if="message.Attachments" title="Has attachments"><i class="bi bi-paperclip"></i></span>
+					<span>{{ getRelativeCreated(message) }}</span>
+					<i class="bi bi-chevron-right"></i>
 				</div>
 			</RouterLink>
 		</div>

@@ -1,6 +1,31 @@
 <h1 align="center">
-  Mailpit - email testing for developers
+  Dispatch Inbox
 </h1>
+
+<p align="center">
+  A focused, self-hosted notification inbox for <a href="https://github.com/XxKotfeJxX/Dispatch">Dispatch</a>.
+</p>
+
+Dispatch Inbox turns messages delivered by Dispatch into an organized, searchable workspace. It adds Dispatch
+branding, platform and priority filters, summary cards, sorting, read-message retention, and a browser-native
+sign-in and registration flow.
+
+The project is maintained as a fork of [Mailpit](https://github.com/axllent/mailpit). Mailpit remains the SMTP,
+storage, message rendering, and API foundation; upstream attribution and documentation are retained below.
+
+### Dispatch Inbox configuration
+
+- `MP_UI_AUTH_FILE=/data/auth` enables persistent user credentials.
+- `MP_UI_REGISTRATION=true` enables the **Create account** page. Set it to `false` to close registration.
+- `MP_DATABASE=/data/inbox.db` enables persistent message storage.
+- Dispatch should deliver the `X-Tags` header using tags such as `platform-github`, `priority-high`, and
+  `category-security` to power the visual filters.
+
+The UI listens on port `8025` and SMTP ingestion listens on port `1025`.
+
+---
+
+## Upstream Mailpit documentation
 
 <div align="center">
     <a href="https://github.com/axllent/mailpit/actions/workflows/tests.yml"><img src="https://github.com/axllent/mailpit/actions/workflows/tests.yml/badge.svg" alt="CI Tests status"></a>

@@ -8,6 +8,7 @@ import NavMailbox from "../components/NavMailbox.vue";
 import NavTags from "../components/NavTags.vue";
 import Pagination from "../components/NavPagination.vue";
 import SearchForm from "../components/SearchForm.vue";
+import InboxFilters from "../components/InboxFilters.vue";
 import { mailbox } from "../stores/mailbox";
 import { pagination } from "../stores/pagination";
 
@@ -20,6 +21,7 @@ export default {
 		NavTags,
 		Pagination,
 		SearchForm,
+		InboxFilters,
 	},
 
 	mixins: [CommonMixins, MessagesMixins],
@@ -179,8 +181,8 @@ export default {
 	<div class="navbar navbar-expand-lg row flex-shrink-0 bg-primary text-white d-print-none" data-bs-theme="dark">
 		<div class="col-xl-2 col-md-3 col-auto pe-0">
 			<RouterLink to="/" class="navbar-brand text-white me-0" @click="reloadMailbox">
-				<img :src="resolve('/mailpit.svg')" alt="Mailpit" />
-				<span class="ms-2 d-none d-sm-inline">Mailpit</span>
+				<img :src="resolve('/dispatch-inbox.svg')" alt="Dispatch Inbox" />
+				<span class="ms-2 d-none d-sm-inline">Dispatch <small>Inbox</small></span>
 			</RouterLink>
 		</div>
 		<div class="col col-md-4k col-lg-5 col-xl-6">
@@ -210,7 +212,7 @@ export default {
 		aria-labelledby="offcanvasLabel"
 	>
 		<div class="offcanvas-header">
-			<h5 id="offcanvasLabel" class="offcanvas-title">Mailpit</h5>
+			<h5 id="offcanvasLabel" class="offcanvas-title">Dispatch Inbox</h5>
 			<button
 				type="button"
 				class="btn-close"
@@ -241,6 +243,7 @@ export default {
 
 		<div class="col-xl-10 col-md-9 mh-100 ps-0 ps-md-2 pe-0">
 			<div id="message-page" class="mh-100" style="overflow-y: auto">
+				<InboxFilters />
 				<ListMessages :loading-messages="loading" />
 			</div>
 		</div>
