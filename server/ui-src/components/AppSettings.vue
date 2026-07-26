@@ -10,7 +10,7 @@ export default {
 	data() {
 		return {
 			mailbox,
-			theme: localStorage.getItem("mp-theme") ? localStorage.getItem("mp-theme") : "auto",
+			theme: localStorage.getItem("mp-theme") ? localStorage.getItem("mp-theme") : "dark",
 			timezones,
 			chaosConfig: false,
 			chaosUpdated: false,
@@ -97,7 +97,7 @@ export default {
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 id="SettingsModalLabel" class="modal-title">Mailpit settings</h5>
+					<h5 id="SettingsModalLabel" class="modal-title">Dispatch Inbox settings</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
@@ -160,12 +160,32 @@ export default {
 							tabindex="0"
 						>
 							<div class="my-3">
-								<label for="theme" class="form-label">Mailpit theme</label>
+								<label for="theme" class="form-label">Inbox theme</label>
 								<select id="theme" v-model="theme" class="form-select">
 									<option value="auto">Auto (detect from browser)</option>
 									<option value="light">Light theme</option>
 									<option value="dark">Dark theme</option>
 								</select>
+							</div>
+							<div class="mb-3">
+								<label for="autoDeleteRead" class="form-label"
+									>Automatically delete read messages</label
+								>
+								<select
+									id="autoDeleteRead"
+									v-model.number="mailbox.autoDeleteReadHours"
+									class="form-select"
+								>
+									<option :value="0">Never</option>
+									<option :value="24">After 1 day</option>
+									<option :value="72">After 3 days</option>
+									<option :value="168">After 7 days</option>
+									<option :value="720">After 30 days</option>
+								</select>
+								<div class="form-text">
+									Only messages you have opened or marked as read are removed. Unread messages are
+									never affected.
+								</div>
 							</div>
 							<div class="mb-3">
 								<label for="timezone" class="form-label">Timezone (for date searches)</label>

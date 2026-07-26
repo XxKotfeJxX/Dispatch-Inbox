@@ -46,6 +46,9 @@ export const mailbox = reactive({
 		? localStorage.getItem("mp-time-zone")
 		: Intl.DateTimeFormat().resolvedOptions().timeZone,
 	showAttachmentDetails: localStorage.getItem("mp-show-attachment-details"), // show attachment details
+	summaryMode: localStorage.getItem("dispatch-summary-mode") === "true",
+	sortOrder: localStorage.getItem("dispatch-sort-order") || "newest",
+	autoDeleteReadHours: Number(localStorage.getItem("dispatch-auto-delete-read-hours") || 0),
 });
 
 watch(
@@ -130,4 +133,19 @@ watch(
 			localStorage.removeItem("mp-show-attachment-details");
 		}
 	},
+);
+
+watch(
+	() => mailbox.summaryMode,
+	(v) => localStorage.setItem("dispatch-summary-mode", String(v)),
+);
+
+watch(
+	() => mailbox.sortOrder,
+	(v) => localStorage.setItem("dispatch-sort-order", v),
+);
+
+watch(
+	() => mailbox.autoDeleteReadHours,
+	(v) => localStorage.setItem("dispatch-auto-delete-read-hours", String(Math.max(0, Number(v) || 0))),
 );

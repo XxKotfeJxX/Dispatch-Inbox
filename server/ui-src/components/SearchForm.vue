@@ -26,7 +26,7 @@ export default {
 	methods: {
 		searchFromURL() {
 			const urlParams = new URLSearchParams(window.location.search);
-			this.search = urlParams.get("q") ? urlParams.get("q") : "";
+			this.search = urlParams.get("text") || "";
 		},
 
 		doSearch(e) {
@@ -40,9 +40,7 @@ export default {
 					pagination.start = 0;
 					this.$emit("loadMessages");
 				}
-				const p = {
-					q: this.search,
-				};
+				const p = { ...this.$route.query, text: this.search, q: this.search };
 				if (pagination.start > 0) {
 					p.start = pagination.start.toString();
 				}
@@ -59,7 +57,10 @@ export default {
 
 		resetSearch() {
 			this.search = "";
-			this.$router.push("/");
+			const p = { ...this.$route.query };
+			delete p.text;
+			delete p.q;
+			this.$router.push(Object.keys(p).length ? { path: "/search", query: p } : "/");
 		},
 	},
 };
@@ -74,7 +75,7 @@ export default {
 					type="text"
 					class="form-control border-0"
 					aria-label="Search"
-					placeholder="Search mailbox"
+					placeholder="Search messages, senders and content"
 				/>
 				<span v-if="search != ''" class="btn btn-link position-absolute end-0 text-muted" @click="resetSearch"
 					><i class="bi bi-x-circle"></i

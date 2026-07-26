@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">Dispatch Inbox</title>
+  <defs>
+    <linearGradient id="dispatch-gradient" x1="32" y1="32" x2="220" y2="224" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#31e6ff"/>
+      <stop offset="1" stop-color="#0077ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="64" fill="#050b1d"/>
+  <path d="M44 70h94c42 0 74 24 74 59s-32 59-74 59H86" fill="none" stroke="url(#dispatch-gradient)" stroke-width="22" stroke-linecap="round"/>
+  <path d="m103 105 42 24-42 24v-15H45v-18h58z" fill="#31e6ff"/>
+  <path d="M48 62v34M48 162v32" stroke="#0077ff" stroke-width="14" stroke-linecap="round"/>
+</svg>

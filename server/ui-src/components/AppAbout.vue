@@ -73,10 +73,16 @@ export default {
 				class="btn btn-sm btn-outline-secondary float-end"
 				data-bs-toggle="modal"
 				data-bs-target="#SettingsModal"
-				title="Mailpit UI settings"
+				title="Dispatch Inbox settings"
 			>
 				<i class="bi bi-gear-fill"></i>
 			</button>
+
+			<form class="float-end me-2" method="post" :action="resolve('/logout')">
+				<button class="btn btn-sm btn-outline-secondary" type="submit" title="Sign out">
+					<i class="bi bi-box-arrow-right"></i>
+				</button>
+			</form>
 
 			<button
 				v-if="mailbox.connected && mailbox.notificationsSupported && !mailbox.notificationsEnabled"
@@ -103,7 +109,7 @@ export default {
 				<div v-if="mailbox.appInfo.RuntimeStats" class="modal-content">
 					<div class="modal-header">
 						<h5 id="AppInfoModalLabel" class="modal-title">
-							Mailpit
+							Dispatch Inbox
 							<code>({{ mailbox.appInfo.Version }})</code>
 							<span v-if="isEdgeBuild" class="badge bg-info text-dark ms-2">edge build</span>
 						</h5>
@@ -203,7 +209,7 @@ export default {
 										<table class="table table-sm table-borderless mb-0">
 											<tbody>
 												<tr>
-													<td>Mailpit up since</td>
+													<td>Inbox up since</td>
 													<td>
 														{{ secondsToRelative(mailbox.appInfo.RuntimeStats.Uptime) }}
 													</td>
@@ -267,11 +273,11 @@ export default {
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
-						<p class="h4">Get browser notifications when Mailpit receives new messages?</p>
+						<p class="h4">Get browser notifications when Dispatch Inbox receives new messages?</p>
 						<p>
 							Note that your browser will ask you for confirmation when you click
-							<code>enable notifications</code>, and that you must have Mailpit open in a browser tab to
-							be able to receive the notifications.
+							<code>enable notifications</code>, and that you must have Dispatch Inbox open in a browser
+							tab to be able to receive the notifications.
 						</p>
 					</div>
 					<div class="modal-footer">

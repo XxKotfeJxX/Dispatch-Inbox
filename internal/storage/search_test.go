@@ -104,6 +104,33 @@ func TestSearch(t *testing.T) {
 	}
 }
 
+func TestSearchAnyTag(t *testing.T) {
+	setup("")
+	defer Close()
+
+	first, err := Store(&testTextEmail, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, err := Store(&testMimeEmail, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := SetMessageTags(first, []string{"platform-telegram"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := SetMessageTags(second, []string{"platform-github"}); err != nil {
+		t.Fatal(err)
+	}
+
+	results, total, err := Search("tag-any:platform-telegram,platform-github", "", 0, 0, 100)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertEqual(t, total, 2, "tag-any search result count")
+	assertEqual(t, len(results), 2, "tag-any listed result count")
+}
+
 func TestSearchDelete100(t *testing.T) {
 	for _, tenantID := range []string{"", "MyServer 3", "host.example.com"} {
 		tenantID = config.DBTenantID(tenantID)

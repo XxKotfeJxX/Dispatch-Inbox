@@ -68,6 +68,11 @@ func Listen() {
 	go pop3.Run()
 
 	r := apiRoutes()
+	r.HandleFunc("GET "+config.Webroot+"login", loginHandler)
+	r.HandleFunc("POST "+config.Webroot+"login", loginHandler)
+	r.HandleFunc("GET "+config.Webroot+"register", registerHandler)
+	r.HandleFunc("POST "+config.Webroot+"register", registerHandler)
+	r.HandleFunc("POST "+config.Webroot+"logout", logoutHandler)
 
 	// kubernetes probes
 	r.HandleFunc("GET "+config.Webroot+"livez", handlers.HealthzHandler)
@@ -82,6 +87,7 @@ func Listen() {
 	r.Handle("GET "+config.Webroot+"favicon.ico", middleWareFunc(embedController))
 	r.Handle("GET "+config.Webroot+"favicon.svg", middleWareFunc(embedController))
 	r.Handle("GET "+config.Webroot+"mailpit.svg", middleWareFunc(embedController))
+	r.Handle("GET "+config.Webroot+"dispatch-inbox.svg", http.HandlerFunc(embedController))
 	r.Handle("GET "+config.Webroot+"notification.png", middleWareFunc(embedController))
 
 	// redirect to webroot if no trailing slash
@@ -108,7 +114,7 @@ func Listen() {
 		middleWareFunc(index)(w, r)
 	})
 
-	if auth.UICredentials != nil {
+	if auth.UIAuthEnabled() {
 		logger.Log().Info("[http] enabling basic authentication")
 	}
 
@@ -333,16 +339,17 @@ func middleWareFunc(fn http.HandlerFunc) http.HandlerFunc {
 		// for a specific request without touching the global auth.UICredentials pointer.
 		skipUIAuth, _ := r.Context().Value(skipUIAuthKey).(bool)
 		isCORSOptionsRequest := AccessControlAllowOrigin != "" && r.Method == http.MethodOptions
-		if !skipUIAuth && !isCORSOptionsRequest && auth.UICredentials != nil {
+		if !skipUIAuth && !isCORSOptionsRequest && auth.UIAuthEnabled() {
 			user, pass, ok := r.BasicAuth()
-
-			if !ok {
-				basicAuthResponse(w)
-				return
-			}
-
-			if !auth.UICredentials.Match(user, pass) {
-				basicAuthResponse(w)
+			_, sessionOK := auth.ValidateUISession(r)
+			if !sessionOK && (!ok || !auth.MatchUI(user, pass)) {
+				if r.Method == http.MethodGet &&
+					!strings.HasPrefix(r.URL.Path, config.Webroot+"api/") &&
+					!htmlPreviewRouteRe.MatchString(r.RequestURI) {
+					http.Redirect(w, r, config.Webroot+"login", http.StatusSeeOther)
+				} else {
+					basicAuthResponse(w)
+				}
 				return
 			}
 		}
@@ -420,8 +427,8 @@ func index(w http.ResponseWriter, r *http.Request) {
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
 	<meta name="referrer" content="no-referrer">
 	<meta name="robots" content="noindex, nofollow, noarchive">
-	<link rel="icon" href="{{ .Webroot }}favicon.svg">
-	<title>Mailpit</title>
+	<link rel="icon" href="{{ .Webroot }}dispatch-inbox.svg">
+	<title>Dispatch Inbox</title>
 	<link rel=stylesheet href="{{ .Webroot }}dist/app.css?{{ .Version }}">
 </head>
 
