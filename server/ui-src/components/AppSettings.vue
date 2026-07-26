@@ -10,7 +10,7 @@ export default {
 	data() {
 		return {
 			mailbox,
-			theme: localStorage.getItem("mp-theme") ? localStorage.getItem("mp-theme") : "auto",
+			theme: localStorage.getItem("mp-theme") ? localStorage.getItem("mp-theme") : "dark",
 			timezones,
 			chaosConfig: false,
 			chaosUpdated: false,
